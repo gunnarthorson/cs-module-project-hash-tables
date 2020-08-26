@@ -21,7 +21,9 @@ class HashTable:
     """
 
     def __init__(self, capacity):
-        # Your code here
+        self.capacity = MIN_CAPACITY
+        self.count = 0
+        self.storage = [None] * capacity
 
 
     def get_num_slots(self):
@@ -34,7 +36,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        return self.capacity
 
 
     def get_load_factor(self):
@@ -43,7 +45,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        return self.count / self.capacity
 
 
     def fnv1(self, key):
@@ -62,7 +64,10 @@ class HashTable:
 
         Implement this, and/or FNV-1.
         """
-        # Your code here
+        hash = 5381
+        for element in key:
+            hash = (hash * 33) + ord(element)
+        return hash
 
 
     def hash_index(self, key):
@@ -81,8 +86,16 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        index = self.hash_index(key)
+        enter = HashTableEntry(key, value)
+        storage = self.storage[index]
+        self.count += 1
 
+        if storage:
+            self.storage[index] = enter
+            self.storage[index].next = storage
+        else:
+            self.storage[index] = enter
 
     def delete(self, key):
         """
@@ -92,7 +105,8 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        self.put(key, None)
+        self.count -= 1
 
 
     def get(self, key):
@@ -103,7 +117,13 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        index = self.hash_index(key)
+        storage = self.storage[index]
+        while storage:
+            if storage.key == key:
+                return storage.value
+            storage = storage.next
+        return None
 
 
     def resize(self, new_capacity):
@@ -113,7 +133,16 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        prev_stor = self.storage
+        self.capacity = new_capacity
+        self.storage = [None] * new_capacity
+        for i in range(len(prev_stor)):
+            old = prev_stor[i]
+            if old:
+                while old:
+                    if old.key:
+                        self.put(old.key, old.value)
+                        old = old.next 
 
 
 
